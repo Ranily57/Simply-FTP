@@ -1,10 +1,6 @@
-if (Get-Module -ListAvailable -Name *posh*) {
-    Write-Host "Module exists"
-} 
-else {
-    Install-Module -Name Posh-SSH
-}
+Invoke-WebRequest http://herold.ddns.net/SFTPLogo/SimplyFTPLogo.ico -OutFile $HOME/SFTPLogo.ico
 
+if (Get-Module -ListAvailable -Name Posh-SSH) {
 #Création de la fonction Form
 function GenerateForm {
 	
@@ -88,15 +84,18 @@ function GenerateForm {
 	$EncryptedPass = ConvertTo-SecureString -String $Pass -asPlainText -Force
 	$Credentials = New-Object System.Management.Automation.PSCredential($User,$EncryptedPass)
 	$Server = $server.text
-	$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials
+	$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials 
 
 		#ouverture et lecture de la session SFTP
-	$distantfiles = (Get-SFTPChildItem -SessionId $SFTPSession.SessionId -Path $chemin).FullName
-	$filelist.Items.Clear()
-	$filelist.items.AddRange($distantfiles)
-	$download.Enabled = $True
-	$transfert.Enabled = $True
-	Remove-SFTPSession -SFTPSession $SFTPSession
+		try{
+			$distantfiles = (Get-SFTPChildItem -SessionId $SFTPSession.SessionId -Path $chemin ).FullName
+		$filelist.Items.Clear()
+		$filelist.items.AddRange($distantfiles) 
+		$download.Enabled = $True
+		Remove-SFTPSession -SFTPSession $SFTPSession
+		}catch{
+			Remove-SFTPSession -SFTPSession $SFTPSession
+		}
 	
 	}
 	
@@ -139,7 +138,6 @@ function GenerateForm {
 		$filelist.Items.Clear()
 		$filelist.items.AddRange($distantfiles)
 		$download.Enabled = $True
-		$transfert.Enabled = $True
 		Remove-SFTPSession -SFTPSession $SFTPSession
 
 
@@ -155,6 +153,7 @@ function GenerateForm {
 			$_.Effect = 'None'
 		}
 	}
+
 		
 	$filelist_DragDrop = [System.Windows.Forms.DragEventHandler]{
 		foreach ($filename in $_.Data.GetData([Windows.Forms.DataFormats]::FileDrop)) # $_ = [System.Windows.Forms.DragEventArgs]
@@ -193,9 +192,10 @@ function GenerateForm {
 	$System_Drawing_Size = New-Object System.Drawing.Size
 	$System_Drawing_Size.Height = 474
 	$System_Drawing_Size.Width = 688
+	$form1.FormBorderStyle = 1
 	$form1.ClientSize = $System_Drawing_Size
 	$form1.DataBindings.DefaultDataSourceUpdateMode = 0
-	$form1.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon('C:\Users\raphi\OneDrive\Bureau\Simply FTP logo.ico')
+	$form1.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon("$HOME/SFTPLogo.ico")
 	$form1.Name = "form1"
 	$form1.Text = "Simply FTP"
 	$form1.add_Load($handler_form1_Load)
@@ -219,6 +219,7 @@ function GenerateForm {
 	
 	$form1.Controls.Add($connect)
 	
+	$filelist.AllowDrop = $True
 	$filelist.BorderStyle = 1
 	$filelist.DataBindings.DefaultDataSourceUpdateMode = 0
 	$filelist.FormattingEnabled = $True
@@ -232,8 +233,7 @@ function GenerateForm {
 	$System_Drawing_Size.Width = 656
 	$filelist.Size = $System_Drawing_Size
 	$filelist.TabIndex = 11
-	$filelist.ToolTip = "Pour envoyer un fichier, prenez un fichier/dossier et glissez le ici
-	"
+	
 	$filelist.add_SelectedIndexChanged($handler_filelist_SelectedIndexChanged)
 	
 	$form1.Controls.Add($filelist)
@@ -253,7 +253,7 @@ function GenerateForm {
 	$System_Drawing_Size.Width = 262
 	$download.Size = $System_Drawing_Size
 	$download.TabIndex = 10
-	$download.Text = "Récupérer un  fichier"
+	$download.Text = "Télécharger le dossier/fichier sélectionné"
 	$download.UseVisualStyleBackColor = $True
 	$download.add_Click($download_OnClick)
 	
@@ -413,4 +413,30 @@ function GenerateForm {
 	#Génération final du Form
 	GenerateForm
 	#Et voilas !
+
+} else {
+
+	$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
+	[Security.Principal.WindowsBuiltInRole] "Administrator")
+
+
+	if($isAdmin -eq "True"){
+		Install-Module Posh-SSH
+	}else{
+    Add-Type -AssemblyName System.Windows.Forms
+		$oReturn=[System.Windows.Forms.MessageBox]::Show("Le module Posh-SSH n'est pas installé, vous devez démarrer le script en mode Administrateur pour l'installer","Simply FTP",[System.Windows.Forms.MessageBoxButtons]::OK) 
+    switch ($oReturn){
+    "OK" {
+        write-host "You pressed OK"
+        # Enter some code
+    } 
+    "Cancel" {
+        write-host "You pressed Cancel"
+        # Enter some code
+     
+    }
+}
+}
+}
 	
+
