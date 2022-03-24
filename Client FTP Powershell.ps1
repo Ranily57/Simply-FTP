@@ -10,15 +10,19 @@ function GenerateForm {
 	
 	#Création des différents objets du Form
 	$form1 = New-Object System.Windows.Forms.Form
+	#----------------
+	#Composant fixe
+	$label2 = New-Object System.Windows.Forms.Label
+	$label1 = New-Object System.Windows.Forms.Label
+	$label4 = New-Object System.Windows.Forms.Label
+	$label3 = New-Object System.Windows.Forms.Label
+	#----------------
+	#Composant actif
 	$connect = New-Object System.Windows.Forms.Button
 	$filelist = New-Object System.Windows.Forms.ListBox
 	$download = New-Object System.Windows.Forms.Button
-	$label4 = New-Object System.Windows.Forms.Label
 	$textBox1 = New-Object System.Windows.Forms.TextBox
-	$label3 = New-Object System.Windows.Forms.Label
 	$passwd = New-Object System.Windows.Forms.TextBox
-	$label2 = New-Object System.Windows.Forms.Label
-	$label1 = New-Object System.Windows.Forms.Label
 	$server = New-Object System.Windows.Forms.TextBox
 	$users = New-Object System.Windows.Forms.TextBox
 	$toolTip1 = New-Object System.Windows.Forms.ToolTip
@@ -99,30 +103,6 @@ function GenerateForm {
 	
 	}
 	
-	$handler_form1_Load= 
-	{
-
-	
-	}
-	
-	$handler_label2_Click= 
-	{
-
-	
-	}
-	
-	$handler_label1_Click= 
-	{
-
-	
-	}
-	
-	$handler_textBox2_Click= 
-	{
-
-	
-	}
-	
 	$connect_OnClick= 
 	{
 		$User = $users.text
@@ -186,7 +166,6 @@ function GenerateForm {
 		$form1.WindowState = $InitialFormWindowState
 	}
 	
-
 	
 	#Génération de tout les composants du Form
 	$System_Drawing_Size = New-Object System.Drawing.Size
@@ -439,4 +418,3 @@ function GenerateForm {
 }
 }
 	
-
