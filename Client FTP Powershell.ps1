@@ -1,3 +1,4 @@
+#Fait par Ranily
 Invoke-WebRequest http://herold.ddns.net/SFTPLogo/SimplyFTPLogo.ico -OutFile $HOME/SFTPLogo.ico
 
 if (Get-Module -ListAvailable -Name Posh-SSH) {
