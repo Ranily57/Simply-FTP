@@ -16,6 +16,7 @@ function GenerateForm {
 	$label1 = New-Object System.Windows.Forms.Label
 	$label4 = New-Object System.Windows.Forms.Label
 	$label3 = New-Object System.Windows.Forms.Label
+	$versementbar = New-Object System.Windows.Forms.ProgressBar
 	#----------------
 	#Composant actif
 	$connect = New-Object System.Windows.Forms.Button
@@ -136,19 +137,24 @@ function GenerateForm {
 
 		
 	$filelist_DragDrop = [System.Windows.Forms.DragEventHandler]{
+		#Configuration des différentes variables
+		$User = $users.text
+		$Pass = $passwd.text
+		$chemin =  $textBox1.text
+		$EncryptedPass = ConvertTo-SecureString -String $Pass -asPlainText -Force
+		$Credentials = New-Object System.Management.Automation.PSCredential($User,$EncryptedPass)
+		$Server = $server.text
+		$i = 0
+		$maxprogress = ($_.Data.GetData([Windows.Forms.DataFormats]::FileDrop)).Count
+		$versementbar.Maximum = $maxprogress
+
+
 		foreach ($filename in $_.Data.GetData([Windows.Forms.DataFormats]::FileDrop)) # $_ = [System.Windows.Forms.DragEventArgs]
 		{
-					#Configuration des différentes variables
-	$User = $users.text
-    $Pass = $passwd.text
-	$chemin =  $textBox1.text
-    $EncryptedPass = ConvertTo-SecureString -String $Pass -asPlainText -Force
-    $Credentials = New-Object System.Management.Automation.PSCredential($User,$EncryptedPass)
-    $Server = $server.text
-
-	$entrypath = $filename
-
+			$entrypath = $filename			
 		#Création de la session SFTP
+		
+		$versementbar.Value = $i++
 	$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials
 	Set-SFTPItem -SessionId $SFTPSession.SessionId -Path $entrypath -Destination $chemin
 	$distantfiles = (Get-SFTPChildItem -SessionId $SFTPSession.SessionId -Path $chemin).FullName
@@ -159,6 +165,7 @@ function GenerateForm {
 	Remove-SFTPSession -SFTPSession $SFTPSession
 		#Fermeture de la session SFTP
 		}
+		$versementbar.Value = 0
 	}
 	
 	$OnLoadForm_StateCorrection=
@@ -343,6 +350,21 @@ function GenerateForm {
 	$label1.add_Click($handler_label1_Click)
 	
 	$form1.Controls.Add($label1)
+
+	$versementbar.DataBindings.DefaultDataSourceUpdateMode = 0
+	$System_Drawing_Point = New-Object System.Drawing.Point
+	$System_Drawing_Point.X = 17
+	$System_Drawing_Point.Y = 212
+	$versementbar.Location = $System_Drawing_Point
+	$versementbar.Name = "versementbar"
+	$System_Drawing_Size = New-Object System.Drawing.Size
+	$System_Drawing_Size.Height = 10
+	$System_Drawing_Size.Width = 655
+	$versementbar.Size = $System_Drawing_Size
+	$versementbar.TabIndex = 13
+	$versementbar.Value = 0
+
+	$form1.Controls.Add($versementbar)
 	
 	$server.BorderStyle = 1
 	$server.DataBindings.DefaultDataSourceUpdateMode = 0
@@ -418,3 +440,4 @@ function GenerateForm {
 }
 }
 	
+
