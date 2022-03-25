@@ -1,6 +1,8 @@
 #Fait par Ranily
 Invoke-WebRequest http://herold.ddns.net/SFTPLogo/SimplyFTPLogo.ico -OutFile $HOME/SFTPLogo.ico
 
+#Test
+
 if (Get-Module -ListAvailable -Name Posh-SSH) {
 #Création de la fonction Form
 function GenerateForm {
