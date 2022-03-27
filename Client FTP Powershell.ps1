@@ -1,4 +1,3 @@
-#Fait par Ranily
 Invoke-WebRequest http://herold.ddns.net/SFTPLogo/SimplyFTPLogo.ico -OutFile $HOME/SFTPLogo.ico
 
 if (Get-Module -ListAvailable -Name Posh-SSH) {
@@ -17,9 +16,11 @@ function GenerateForm {
 	$label1 = New-Object System.Windows.Forms.Label
 	$label4 = New-Object System.Windows.Forms.Label
 	$label3 = New-Object System.Windows.Forms.Label
+	$label5 = New-Object System.Windows.Forms.Label
 	$versementbar = New-Object System.Windows.Forms.ProgressBar
 	#----------------
 	#Composant actif
+	$port = New-Object System.Windows.Forms.TextBox
 	$connect = New-Object System.Windows.Forms.Button
 	$filelist = New-Object System.Windows.Forms.ListBox
 	$download = New-Object System.Windows.Forms.Button
@@ -53,11 +54,12 @@ function GenerateForm {
 					#Configuration des différentes variables
 				$User = $users.text
 				$Pass = $passwd.text
+				$portaccess = $port.text
 				$chemin =  $textBox1.text
 				$EncryptedPass = ConvertTo-SecureString -String $Pass -asPlainText -Force
 				$Credentials = New-Object System.Management.Automation.PSCredential($User,$EncryptedPass)
 				$Server = $server.text
-				$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials		
+				$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials -Port $portaccess		
 					#Création de la session SFTP		
 				Get-SFTPItem -SessionId $SFTPSession.SessionId -Path $chemin -Destination $entrypath
 					#Message de fin pour dire que les fichiers ont bien était transférer
@@ -87,10 +89,11 @@ function GenerateForm {
 	$User = $users.text
 	$Pass = $passwd.text
 	$chemin =  $textBox1.text
+	$portaccess = $port.text
 	$EncryptedPass = ConvertTo-SecureString -String $Pass -asPlainText -Force
 	$Credentials = New-Object System.Management.Automation.PSCredential($User,$EncryptedPass)
 	$Server = $server.text
-	$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials 
+	$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials -Port $portaccess
 
 		#ouverture et lecture de la session SFTP
 		try{
@@ -110,10 +113,11 @@ function GenerateForm {
 		$User = $users.text
 		$Pass = $passwd.text
 		$chemin =  $textBox1.text
+		$portaccess = $port.text
 		$EncryptedPass = ConvertTo-SecureString -String $Pass -asPlainText -Force
 		$Credentials = New-Object System.Management.Automation.PSCredential($User,$EncryptedPass)
 		$Server = $server.text
-		$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials
+		$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials -Port $portaccess
 
 		$distantfiles = (Get-SFTPChildItem -SessionId $SFTPSession.SessionId -Path $chemin).FullName
 
@@ -142,11 +146,14 @@ function GenerateForm {
 		$User = $users.text
 		$Pass = $passwd.text
 		$chemin =  $textBox1.text
+		$portaccess = $port.text
 		$EncryptedPass = ConvertTo-SecureString -String $Pass -asPlainText -Force
 		$Credentials = New-Object System.Management.Automation.PSCredential($User,$EncryptedPass)
 		$Server = $server.text
 		$i = 0
 		$maxprogress = ($_.Data.GetData([Windows.Forms.DataFormats]::FileDrop)).Count
+
+		
 		$versementbar.Maximum = $maxprogress
 
 
@@ -154,9 +161,9 @@ function GenerateForm {
 		{
 			$entrypath = $filename			
 		#Création de la session SFTP
-		
+		write-host $filename.GetSize
 		$versementbar.Value = $i++
-	$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials
+	$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials -Port $portaccess
 	Set-SFTPItem -SessionId $SFTPSession.SessionId -Path $entrypath -Destination $chemin
 	$distantfiles = (Get-SFTPChildItem -SessionId $SFTPSession.SessionId -Path $chemin).FullName
 
@@ -205,6 +212,21 @@ function GenerateForm {
 	$connect.add_Click($connect_OnClick)
 	
 	$form1.Controls.Add($connect)
+
+	$port.BorderStyle = 1
+	$port.DataBindings.DefaultDataSourceUpdateMode = 0
+	$System_Drawing_Point = New-Object System.Drawing.Point
+	$System_Drawing_Point.X = 499
+	$System_Drawing_Point.Y = 28
+	$port.Location = $System_Drawing_Point
+	$port.Name = "port"
+	$System_Drawing_Size = New-Object System.Drawing.Size
+	$System_Drawing_Size.Height = 20
+	$System_Drawing_Size.Width = 152
+	$port.Size = $System_Drawing_Size
+	$port.TabIndex = 15
+
+	$form1.Controls.Add($port)
 	
 	$filelist.AllowDrop = $True
 	$filelist.BorderStyle = 1
@@ -376,12 +398,31 @@ function GenerateForm {
 	$server.Name = "server"
 	$System_Drawing_Size = New-Object System.Drawing.Size
 	$System_Drawing_Size.Height = 20
-	$System_Drawing_Size.Width = 637
+	$System_Drawing_Size.Width = 477
 	$server.Size = $System_Drawing_Size
 	$server.TabIndex = 3
 	$server.add_Click($handler_textBox2_Click)
 	
 	$form1.Controls.Add($server)
+
+	$label5.DataBindings.DefaultDataSourceUpdateMode = 0
+
+$System_Drawing_Point = New-Object System.Drawing.Point
+$System_Drawing_Point.X = 499
+$System_Drawing_Point.Y = 6
+$label5.Location = $System_Drawing_Point
+$label5.Name = "label5"
+$System_Drawing_Size = New-Object System.Drawing.Size
+$System_Drawing_Size.Height = 18
+$System_Drawing_Size.Width = 152
+$label5.Size = $System_Drawing_Size
+$label5.TabIndex = 14
+$label5.Text = "Port"
+$label5.TextAlign = 32
+$label5.add_Click($handler_label5_Click)
+
+$form1.Controls.Add($label5)
+
 	
 	$users.BorderStyle = 1
 	$users.DataBindings.DefaultDataSourceUpdateMode = 0
@@ -440,5 +481,3 @@ function GenerateForm {
 }
 }
 }
-	
-
