@@ -1,14 +1,14 @@
 Invoke-WebRequest https://raw.githubusercontent.com/Ranily57/Simply-FTP/main/SFTPLogo/SimplyFTPLogo.ico -OutFile $HOME/SFTPLogo.ico
 
 if (Get-Module -ListAvailable -Name Posh-SSH) {
-#CrÃ©ation de la fonction Form
+#Création de la fonction Form
 function GenerateForm {
 	
 	#Importation  de l'assembly
 	[reflection.assembly]::loadwithpartialname("System.Drawing") | Out-Null
 	[reflection.assembly]::loadwithpartialname("System.Windows.Forms") | Out-Null
 	
-	#CrÃ©ation des diffÃ©rents objets du Form
+	#Création des différents objets du Form
 	$form1 = New-Object System.Windows.Forms.Form
 	#----------------
 	#Composant fixe
@@ -30,18 +30,18 @@ function GenerateForm {
 	$users = New-Object System.Windows.Forms.TextBox
 	$toolTip1 = New-Object System.Windows.Forms.ToolTip
 	$InitialFormWindowState = New-Object System.Windows.Forms.FormWindowState
-	#CrÃ©ation des Ã©vÃ¨nements en cas d'interaction avec le formulaire
+	#Création des évènements en cas d'interaction avec le formulaire
 	#Seul la liste et les boutons sont scripter	
 
 	$download_OnClick= 
 	{
-				#CrÃ©ation du form de sÃ©lection d'un emplacement
+				#Création du form de sélection d'un emplacement
 			[Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
 			[System.Windows.Forms.Application]::EnableVisualStyles()
 			$browse = New-Object System.Windows.Forms.FolderBrowserDialog
 			$browse.SelectedPath = "C:\"
 			$browse.ShowNewFolderButton = $false
-			$browse.Description = "SÃ©lectionner un dossier"
+			$browse.Description = "Sélectionner un dossier"
 		
 				#Petite boucle:)
 			$loop = $true
@@ -51,7 +51,7 @@ function GenerateForm {
 				{
 				$loop = $false
 				$entrypath = $browse.SelectedPath
-					#Configuration des diffÃ©rentes variables
+					#Configuration des différentes variables
 				$User = $users.text
 				$Pass = $passwd.text
 				$portaccess = $port.text
@@ -60,15 +60,15 @@ function GenerateForm {
 				$Credentials = New-Object System.Management.Automation.PSCredential($User,$EncryptedPass)
 				$Server = $server.text
 				$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials -Port $portaccess		
-					#CrÃ©ation de la session SFTP		
+					#Création de la session SFTP		
 				Get-SFTPItem -SessionId $SFTPSession.SessionId -Path $chemin -Destination $entrypath
-					#Message de fin pour dire que les fichiers ont bien Ã©tait transfÃ©rer
-				[System.Windows.Forms.MessageBox]::Show("Fichier tÃ©lÃ©chargÃ© !")
+					#Message de fin pour dire que les fichiers ont bien était transférer
+				[System.Windows.Forms.MessageBox]::Show("Fichier téléchargé !")
 				Remove-SFTPSession -SFTPSession $SFTPSession
 				
 				} else
 				{
-					$res = [System.Windows.Forms.MessageBox]::Show("Voulez-vous continuer ou arrÃªter ?", "SÃ©lectionner un dossier", [System.Windows.Forms.MessageBoxButtons]::RetryCancel)
+					$res = [System.Windows.Forms.MessageBox]::Show("Voulez-vous continuer ou arrêter ?", "Sélectionner un dossier", [System.Windows.Forms.MessageBoxButtons]::RetryCancel)
 					if($res -eq "Annuler")
 					{
 						
@@ -142,7 +142,7 @@ function GenerateForm {
 
 		
 	$filelist_DragDrop = [System.Windows.Forms.DragEventHandler]{
-		#Configuration des diffÃ©rentes variables
+		#Configuration des différentes variables
 		$User = $users.text
 		$Pass = $passwd.text
 		$chemin =  $textBox1.text
@@ -160,7 +160,7 @@ function GenerateForm {
 		foreach ($filename in $_.Data.GetData([Windows.Forms.DataFormats]::FileDrop)) # $_ = [System.Windows.Forms.DragEventArgs]
 		{
 			$entrypath = $filename			
-		#CrÃ©ation de la session SFTP
+		#Création de la session SFTP
 		write-host $filename.GetSize
 		$versementbar.Value = $i++
 	$SFTPSession = New-SFTPSession -ComputerName $Server -Credential $Credentials -Port $portaccess
@@ -182,7 +182,7 @@ function GenerateForm {
 	}
 	
 	
-	#GÃ©nÃ©ration de tout les composants du Form
+	#Génération de tout les composants du Form
 	$System_Drawing_Size = New-Object System.Drawing.Size
 	$System_Drawing_Size.Height = 474
 	$System_Drawing_Size.Width = 688
@@ -262,7 +262,7 @@ function GenerateForm {
 	$System_Drawing_Size.Width = 262
 	$download.Size = $System_Drawing_Size
 	$download.TabIndex = 10
-	$download.Text = "TÃ©lÃ©charger le dossier/fichier sÃ©lectionnÃ©"
+	$download.Text = "Télécharger le dossier/fichier sélectionné"
 	$download.UseVisualStyleBackColor = $True
 	$download.add_Click($download_OnClick)
 	
@@ -439,13 +439,13 @@ $form1.Controls.Add($label5)
 	
 	$form1.Controls.Add($users)
 	
-	$toolTip1.ToolTipTitle = "Ne peut que transfÃ©rer un seul fichier"
+	$toolTip1.ToolTipTitle = "Ne peut que transférer un seul fichier"
 	$toolTip1.add_Popup($handler_toolTip1_Popup)
 	
 	
 	#Sauvegarde de la forme initial
 	$InitialFormWindowState = $form1.WindowState
-	#initialisation de la forme au dÃ©marrage du  form
+	#initialisation de la forme au démarrage du  form
 	$form1.add_Load($OnLoadForm_StateCorrection)
 	$filelist.Add_DragOver($filelist_DragOver)
 	$filelist.Add_DragDrop($filelist_DragDrop)
@@ -453,7 +453,7 @@ $form1.Controls.Add($label5)
 	$form1.ShowDialog()| Out-Null
 	
 	} 
-	#GÃ©nÃ©ration final du Form
+	#Génération final du Form
 	GenerateForm
 	#Et voilas !
 
@@ -467,7 +467,7 @@ $form1.Controls.Add($label5)
 		Install-Module Posh-SSH
 	}else{
     Add-Type -AssemblyName System.Windows.Forms
-		$oReturn=[System.Windows.Forms.MessageBox]::Show("Le module Posh-SSH n'est pas installÃ©, vous devez dÃ©marrer le script en mode Administrateur pour l'installer","Simply FTP",[System.Windows.Forms.MessageBoxButtons]::OK) 
+		$oReturn=[System.Windows.Forms.MessageBox]::Show("Le module Posh-SSH n'est pas installé, vous devez démarrer le script en mode Administrateur pour l'installer","Simply FTP",[System.Windows.Forms.MessageBoxButtons]::OK) 
     switch ($oReturn){
     "OK" {
         write-host "You pressed OK"
