@@ -1,4 +1,4 @@
-Invoke-WebRequest http://herold.ddns.net/SFTPLogo/SimplyFTPLogo.ico -OutFile $HOME/SFTPLogo.ico
+Invoke-WebRequest https://raw.githubusercontent.com/Ranily57/Simply-FTP/main/SFTPLogo/SimplyFTPLogo.ico -OutFile $HOME/SFTPLogo.ico
 
 if (Get-Module -ListAvailable -Name Posh-SSH) {
 #Création de la fonction Form
